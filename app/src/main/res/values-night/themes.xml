@@ -2,13 +2,13 @@
     <!-- Base application theme. -->
     <style name="Theme.ToDo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">#e08f17</item>
+        <item name="colorPrimaryVariant">#d67610</item>
+        <item name="colorOnPrimary">#fff</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">#2c3740</item>
+        <item name="colorSecondaryVariant">#2c3740</item>
+        <item name="colorOnSecondary">#fff</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

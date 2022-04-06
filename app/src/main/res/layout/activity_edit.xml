@@ -92,7 +92,7 @@
         android:layout_marginTop="38dp"
         android:layout_marginEnd="168dp"
         android:text="Editar Tarea"
-        android:textColor="#3F51B5"
+        android:textColor="?attr/colorPrimary"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

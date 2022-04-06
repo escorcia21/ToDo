@@ -5,7 +5,7 @@
     <item
         android:id="@+id/favorite"
         android:contentDescription="content_description_favorite"
-        android:icon="@drawable/outline_light_mode_black_24"
+        android:icon="@drawable/outline_brightness_4_24"
         android:title="favorite"
         app:showAsAction="ifRoom" />
 

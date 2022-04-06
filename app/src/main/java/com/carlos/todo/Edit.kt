@@ -47,15 +47,18 @@ class Edit : AppCompatActivity() {
     private fun updateToDo() {
         val title = field_title.editText?.text.toString()
         val desc = field_description.editText?.text.toString()
-        if (title == bundle.getString("titulo") && desc == bundle.getString("descripcion")){
-            Toast.makeText(this, "No se han ingresado cambios", Toast.LENGTH_SHORT).show()
+        if (title.isEmpty() || desc.isEmpty()) {
+            Toast.makeText(this, "Campos vacios", Toast.LENGTH_SHORT).show()
         }else {
-            val id = bundle.getInt("id")
-            val card = CardData(id,title,desc)
-            Log.e("BDD","${card.id} - ${card.title} - ${card.description}")
-            bdd.updateToDo(card)
-            CardAdapter.instance.addItems(bdd.getAll())
-            finish()
+            if (title == bundle.getString("titulo") && desc == bundle.getString("descripcion")){
+                Toast.makeText(this, "No se han ingresado cambios", Toast.LENGTH_SHORT).show()
+            }else {
+                val id = bundle.getInt("id")
+                val card = CardData(id,title,desc)
+                bdd.updateToDo(card)
+                CardAdapter.instance.addItems(bdd.getAll())
+                finish()
+            }
         }
     }
 }

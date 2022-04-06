@@ -1,17 +1,26 @@
 package com.carlos.todo
 
+import android.content.ClipData
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.res.Resources
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carlos.todo.model.CardData
+import com.carlos.todo.model.SharedPrefHelper
 import com.carlos.todo.model.SqLiteHelper
 import com.carlos.todo.view.CardAdapter
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
 
@@ -23,15 +32,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cardAdapter:CardAdapter
     private lateinit var admin: SqLiteHelper
     private lateinit var bdd: SQLiteDatabase
-
+    private lateinit var bar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         admin = SqLiteHelper(this,"ToDos", null, 1)
         bdd = admin.writableDatabase
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setContentView(R.layout.activity_main)
+
         //userList = ArrayList()
         floatBtn = findViewById(R.id.floatbtn)
         recv = findViewById(R.id.listView)
@@ -40,17 +49,48 @@ class MainActivity : AppCompatActivity() {
         recv.adapter = cardAdapter
         getAllToDo()
         floatBtn.setOnClickListener { addToDo() }
+        bar = findViewById<MaterialToolbar>(R.id.topAppBar)
+
+        bar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.favorite -> {
+                    var theme = SharedPrefHelper(this)
+
+                    if (theme.darkMode == 0){
+                        theme.darkMode = 1
+                    }else{
+                        theme.darkMode = 0
+                    }
+                    setDayNigth()
+                    true
+                }
+                else -> false
+            }
+        }
 
         cardAdapter.setOnDelete {
             deleteToDo(it.id)
+        }
+        setDayNigth()
+    }
+
+    private fun setDayNigth(){
+        var theme = SharedPrefHelper(this)
+        var mode = theme.darkMode
+        if (mode == 0){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            delegate.applyDayNight()
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            delegate.applyDayNight()
         }
     }
 
     private fun getAllToDo() {
         val lista = admin.getAll()
-        Log.e("ToDo get","${lista.size}")
+        //Log.e("ToDo get","${lista.size}")
         cardAdapter.addItems(lista)
-        Log.e("ToDo get-add","${lista.size}")
+        //Log.e("ToDo get-add","${lista.size}")
     }
 
     private fun deleteToDo(id: Int){

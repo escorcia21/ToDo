@@ -1,7 +1,7 @@
 # ToDo
 
 Aplicacion para agregar, editar, eliminar tareas (ToDO)
-#### La aplicacion contiene
+#### La aplicación contiene
 * Base de datos(SQlite)
 * Tema oscuro/claro
 

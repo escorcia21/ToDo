@@ -1,19 +1,22 @@
 package com.carlos.todo.view
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import android.widget.*
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.carlos.todo.Edit
-import com.carlos.todo.MainActivity
 import com.carlos.todo.R
 import com.carlos.todo.model.CardData
-import com.carlos.todo.model.SqLiteHelper
+import com.google.android.material.card.MaterialCardView
 
 class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
     private var userList:ArrayList<CardData> = ArrayList()
@@ -29,17 +32,30 @@ class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolde
     }
 
     inner class CardViewHolder(val v:View): RecyclerView.ViewHolder(v) {
+        var card: MaterialCardView
         val myTitle: TextView
         var id: Int = 0
         val myDescription:TextView
         var myEdit:Button
         var myDelete:Button
+        var arrow: ImageButton
+        var copy: ImageButton
+        var hiddenView: LinearLayout
 
         init {
+            // init variables
             this.myTitle = v.findViewById<TextView>(R.id.card_title)
             this.myDescription = v.findViewById<TextView>(R.id.card_description)
             this.myEdit = v.findViewById<Button>(R.id.card_edit)
             this.myDelete = v.findViewById<Button>(R.id.card_delete)
+
+            //init card
+            this.card = v.findViewById<MaterialCardView>(R.id.card)
+            this.arrow = v.findViewById(R.id.arrow_button)
+            this.copy = v.findViewById(R.id.copy)
+            this.hiddenView = v.findViewById(R.id.hide)
+
+            // init listeners
             myEdit.setOnClickListener {
                 val act = Intent(c,Edit::class.java)
                 act.putExtra("id",this.id)
@@ -48,6 +64,16 @@ class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolde
                 startActivity(c,act,null)
             }
         }
+
+        private fun setCheckable(v:View){
+
+            // set checkable
+            card.setOnLongClickListener {
+                card.isChecked = !card.isChecked
+                true
+            }
+        }
+
     }
 
     fun setOnDelete(callback:(CardData) -> Unit){
@@ -71,10 +97,41 @@ class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolde
         holder.myTitle.text = newList.title
         holder.myDescription.text = newList.description
         holder.myDelete.setOnClickListener { onDelete?.invoke(newList)}
+
+        /*holder.card.setOnClickListener {
+            if (holder.hiddenView.visibility == View.GONE) {
+                holder.hiddenView.visibility = View.VISIBLE
+                holder.arrow.setImageResource(R.drawable.ic_baseline_expand_less_24)
+            } else {
+                holder.hiddenView.visibility = View.GONE
+                holder.arrow.setImageResource(R.drawable.ic_baseline_expand_more_24)
+            }
+        }*/
+
+        holder.arrow.setOnClickListener {
+            if (holder.hiddenView.visibility == View.GONE) {
+                holder.hiddenView.visibility = View.VISIBLE
+                holder.arrow.setImageResource(R.drawable.ic_baseline_expand_less_24)
+            } else {
+                holder.hiddenView.visibility = View.GONE
+                holder.arrow.setImageResource(R.drawable.ic_baseline_expand_more_24)
+            }
+        }
+
+        holder.copy.setOnClickListener{
+            copyToCipBoard(holder.myDescription.text.toString())
+        }
+    }
+
+
+    private fun copyToCipBoard(textToCopy: String) {
+        val clipboardManager = c.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("text", textToCopy)
+        clipboardManager.setPrimaryClip(clipData)
+        Toast.makeText(c, "Text copied to clipboard", Toast.LENGTH_LONG).show()
     }
 
     override fun getItemCount(): Int {
         return userList.size
     }
-
 }

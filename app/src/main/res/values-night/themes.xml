@@ -5,12 +5,13 @@
         <item name="colorPrimary">#e08f17</item>
         <item name="colorPrimaryVariant">#d67610</item>
         <item name="colorOnPrimary">#fff</item>
+        <item name="colorOnSurface">#fff</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#2c3740</item>
+        <item name="colorSecondary">#fff</item>
         <item name="colorSecondaryVariant">#2c3740</item>
         <item name="colorOnSecondary">#fff</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

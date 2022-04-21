@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <menu xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/searchIcon"
+        android:icon="@drawable/outline_search_24"
+        android:iconTint="#FFFFFF"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
 
     <item
         android:id="@+id/favorite"
-        android:contentDescription="content_description_favorite"
+        android:contentDescription="Cambio de tema"
         android:icon="@drawable/outline_brightness_4_24"
-        android:title="favorite"
+        android:iconTint="#FFFFFF"
+        android:title="Theme"
         app:showAsAction="ifRoom" />
-
-    </menu>
+</menu>

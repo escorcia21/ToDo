@@ -4,16 +4,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2385" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/calendar.xml" value="0.2775" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/filled_light_mode_20.xml" value="0.262" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/ic_baseline_expand_less_24.xml" value="0.2065" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/ic_baseline_expand_more_24.xml" value="0.2065" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2385" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/outline_brightness_4_24.xml" value="0.262" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/outline_calendar_today_24.xml" value="0.262" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/outline_content_copy_24.xml" value="0.262" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/drawable/theme.xml" value="0.2755" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/layout/activity_edit.xml" value="0.27291666666666664" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/layout/add_todo.xml" value="0.366189111747851" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/layout/add_todo.xml" value="0.25" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/layout/list_item.xml" value="0.2" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/menu/top_app_bar.xml" value="0.27291666666666664" />
         <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2755" />
+        <entry key="..\:/Code/AndroidStudioProjects/ToDo/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.262" />
       </map>
     </option>
   </component>

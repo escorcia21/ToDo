@@ -8,9 +8,13 @@ import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.carlos.todo.databinding.ActivityMainBinding
@@ -27,10 +31,12 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.util.*
+import kotlin.math.log
+
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    //private lateinit var binding: ActivityMainBinding
     private lateinit var floatBtn: FloatingActionButton
     private lateinit var recv: RecyclerView
     //private lateinit var userList:ArrayList<CardData>
@@ -40,10 +46,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bar: MaterialToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
+        //supportActionBar?.hide()
+        setDayNigth()
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
         setContentView(R.layout.activity_main)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        //setHasOptionsMenu(true)
+        //binding = ActivityMainBinding.inflate(layoutInflater)
         //setContentView(binding.root)
         createNotificationChannel()
 
@@ -60,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         getAllToDo()
         floatBtn.setOnClickListener { addToDo() }
         bar = findViewById<MaterialToolbar>(R.id.topAppBar)
-
+        setSupportActionBar(bar)
         bar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.favorite -> {
@@ -81,12 +91,10 @@ class MainActivity : AppCompatActivity() {
         cardAdapter.setOnDelete {
             deleteToDo(it.id)
         }
-        setDayNigth()
     }
 
-    private fun createNotificationChannel()
-    {
-        val name = "Notif Channel"
+    private fun createNotificationChannel() {
+        val name = "Notification Channel"
         val desc = "A Description of the Channel"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel(channelID, name, importance)
@@ -113,21 +121,19 @@ class MainActivity : AppCompatActivity() {
             date,
             pendingIntent
         )
-        showAlert(date, title, message)
+        showAlert(date, title)
     }
 
-    private fun showAlert(time: Long, title: String, message: String)
-    {
+    private fun showAlert(time: Long, title: String) {
         val date = Date(time)
         val dateFormat = android.text.format.DateFormat.getLongDateFormat(applicationContext)
         val timeFormat = android.text.format.DateFormat.getTimeFormat(applicationContext)
 
         AlertDialog.Builder(this)
-            .setTitle("Notification Scheduled")
+            .setTitle("Recordatorio")
             .setMessage(
-                "Title: " + title +
-                        "\nMessage: " + message +
-                        "\nAt: " + dateFormat.format(date) + " " + timeFormat.format(date))
+                "Titulo: " + title +
+                        "\nPara: " + dateFormat.format(date) + " " + timeFormat.format(date))
             .setPositiveButton("Okay"){_,_ ->}
             .show()
     }
@@ -137,10 +143,8 @@ class MainActivity : AppCompatActivity() {
         var mode = theme.darkMode
         if (mode == 0){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            delegate.applyDayNight()
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            delegate.applyDayNight()
         }
     }
 
@@ -232,8 +236,13 @@ class MainActivity : AppCompatActivity() {
                 dialog,_->
             val title = userName.editText?.text.toString()
             val desc = userNo.editText?.text.toString()
+            val fecha = date.text.toString()
+            val tiempo = time.text.toString()
+
+
             cardAdapter.notifyDataSetChanged()
-            if (title.isEmpty() || desc.isEmpty()){
+            if (title.isEmpty() || desc.isEmpty() || fecha.isEmpty() || tiempo.isEmpty()){
+
                 Toast.makeText(this,"Campos vacios",Toast.LENGTH_SHORT).show()
             }else {
                 //userList.add(CardData(null,title,desc))
@@ -241,22 +250,16 @@ class MainActivity : AppCompatActivity() {
                 val status = admin.insertToDo(todo)
 
                 if (status > -1) {
+                    val formato = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US)
+                    var txt = date.text.toString() + " " + time.text.toString().replace("pm","").replace("am","")
+                    var date = formato.parse(txt)
+                    scheduleNotification("${ String(Character.toChars(	0x1F644))} Recordatorio",title, date.time)
                     Toast.makeText(this,"Se ha Agregado la tarea",Toast.LENGTH_SHORT).show()
                 }else {
                     Toast.makeText(this,"No se ha Agregado la tarea",Toast.LENGTH_SHORT).show()
                 }
                 getAllToDo()
             }
-
-
-
-
-            val formato = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US)
-            var txt = date.text.toString() + " " + time.text.toString().replace("pm","").replace("am","")
-            var date = formato.parse(txt)
-            //Toast.makeText(this, date.toString(), Toast.LENGTH_SHORT).show()
-            scheduleNotification(title,"Mensaje", date.time)
-
 
             dialog.dismiss()
         }
@@ -268,6 +271,31 @@ class MainActivity : AppCompatActivity() {
         }
         addDialog.create()
         addDialog.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.top_app_bar, menu)
+        val item = menu?.findItem(R.id.searchIcon)
+        //Log.e("init","ok")
+        if (item != null) {
+            //Log.e("valor","${item.icon}")
+            val searchView = item.actionView as SearchView
+
+            searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    Log.e("Query","buscando boton")
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    Log.e("Query","Buscando")
+                    cardAdapter.filter.filter(newText)
+                    return false
+                }
+            })
+        }
+        return true
     }
 }
 

@@ -4,13 +4,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.transition.AutoTransition
-import android.transition.TransitionManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.carlos.todo.Edit
@@ -18,8 +16,9 @@ import com.carlos.todo.R
 import com.carlos.todo.model.CardData
 import com.google.android.material.card.MaterialCardView
 
-class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
+class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolder>(),  Filterable{
     private var userList:ArrayList<CardData> = ArrayList()
+    private lateinit var userListBackup:ArrayList<CardData>;
     private var onDelete: ((CardData) -> Unit)? = null
 
     companion object {
@@ -82,6 +81,8 @@ class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolde
 
     fun addItems(items: ArrayList<CardData>) {
         userList = items
+        userListBackup = ArrayList<CardData>(userList)
+        //Log.e("Tam","${userListBackup.size}")
         notifyDataSetChanged()
     }
 
@@ -123,7 +124,6 @@ class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolde
         }
     }
 
-
     private fun copyToCipBoard(textToCopy: String) {
         val clipboardManager = c.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("text", textToCopy)
@@ -133,5 +133,40 @@ class CardAdapter(val c: Context):RecyclerView.Adapter<CardAdapter.CardViewHolde
 
     override fun getItemCount(): Int {
         return userList.size
+    }
+
+    override fun getFilter(): Filter {
+        return filterData;
+    }
+
+    private val filterData = object: Filter() {
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            val filteredList = ArrayList<CardData>()
+
+            if (constraint == null || constraint.isEmpty()){
+                filteredList.addAll(userListBackup)
+                Log.e("Tam","${filteredList.size}")
+            } else {
+                val pattern = constraint.toString().lowercase().trim()
+
+                for (item in userListBackup) {
+                    if (item.title.lowercase().contains(pattern)) {
+                        filteredList.add(item)
+                    }
+                }
+            }
+
+            val results = FilterResults()
+            results.values = filteredList
+
+            return results
+        }
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            userList.clear()
+            userList.addAll(results?.values as Collection<CardData>)
+            notifyDataSetChanged()
+        }
+
     }
 }

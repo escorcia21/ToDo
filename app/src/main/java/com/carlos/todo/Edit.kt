@@ -26,6 +26,7 @@ class Edit : AppCompatActivity() {
         bundle = intent.extras!!
         val editTitle = bundle.getString("titulo")
         val editDescription = bundle.getString("descripcion")
+        val fecha = bundle.getString("fecha")
 
         field_title = findViewById<TextInputLayout>(R.id.edittitle)
         field_description = findViewById<TextInputLayout>(R.id.editDescripcion)
@@ -40,11 +41,13 @@ class Edit : AppCompatActivity() {
         }
 
         update.setOnClickListener {
-            updateToDo()
+            if (fecha != null) {
+                updateToDo(fecha)
+            }
         }
     }
 
-    private fun updateToDo() {
+    private fun updateToDo(fecha:String) {
         val title = field_title.editText?.text.toString()
         val desc = field_description.editText?.text.toString()
         if (title.isEmpty() || desc.isEmpty()) {
@@ -54,7 +57,7 @@ class Edit : AppCompatActivity() {
                 Toast.makeText(this, "No se han ingresado cambios", Toast.LENGTH_SHORT).show()
             }else {
                 val id = bundle.getInt("id")
-                val card = CardData(id,title,desc)
+                val card = CardData(id,title,desc,fecha)
                 bdd.updateToDo(card)
                 CardAdapter.instance.addItems(bdd.getAll())
                 finish()

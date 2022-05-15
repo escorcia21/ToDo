@@ -4,20 +4,21 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuItem
-import android.view.inputmethod.EditorInfo
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.SearchAutoComplete
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.carlos.todo.databinding.ActivityMainBinding
 import com.carlos.todo.model.*
 import com.carlos.todo.view.CardAdapter
 import com.google.android.material.appbar.MaterialToolbar
@@ -31,7 +32,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.util.*
-import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,17 +44,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var admin: SqLiteHelper
     private lateinit var bdd: SQLiteDatabase
     private lateinit var bar: MaterialToolbar
+    private var myActMode : ActionMode? = null
+    var isContextualMenuEnable = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //supportActionBar?.hide()
         setDayNigth()
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-
         setContentView(R.layout.activity_main)
-        //setHasOptionsMenu(true)
-        //binding = ActivityMainBinding.inflate(layoutInflater)
-        //setContentView(binding.root)
+
+        bar = findViewById(R.id.topAppBar)
+        setSupportActionBar(bar)
         createNotificationChannel()
 
         admin = SqLiteHelper(this,"ToDos", null, 1)
@@ -69,8 +69,7 @@ class MainActivity : AppCompatActivity() {
         recv.adapter = cardAdapter
         getAllToDo()
         floatBtn.setOnClickListener { addToDo() }
-        bar = findViewById<MaterialToolbar>(R.id.topAppBar)
-        setSupportActionBar(bar)
+
         bar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.favorite -> {
@@ -245,14 +244,14 @@ class MainActivity : AppCompatActivity() {
 
                 Toast.makeText(this,"Campos vacios",Toast.LENGTH_SHORT).show()
             }else {
-                //userList.add(CardData(null,title,desc))
-                var todo = CardData(1,title,desc)
-                val status = admin.insertToDo(todo)
+                val formato = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US)
+                val formatoFecha = SimpleDateFormat("yyyy/MM/dd · hh:mm a", Locale.US)
+                var txt = date.text.toString() + " " + time.text.toString().replace("pm","").replace("am","")
+                var date = formato.parse(txt)
 
+                var todo = CardData(1,title,desc,formatoFecha.format(date))
+                val status = admin.insertToDo(todo)
                 if (status > -1) {
-                    val formato = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US)
-                    var txt = date.text.toString() + " " + time.text.toString().replace("pm","").replace("am","")
-                    var date = formato.parse(txt)
                     scheduleNotification("${ String(Character.toChars(	0x1F644))} Recordatorio",title, date.time)
                     Toast.makeText(this,"Se ha Agregado la tarea",Toast.LENGTH_SHORT).show()
                 }else {
@@ -274,13 +273,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        super.onCreateOptionsMenu(menu)
+
         menuInflater.inflate(R.menu.top_app_bar, menu)
         val item = menu?.findItem(R.id.searchIcon)
         //Log.e("init","ok")
         if (item != null) {
             //Log.e("valor","${item.icon}")
             val searchView = item.actionView as SearchView
+            searchView.queryHint = "Buscar"
+            val ll = searchView.getChildAt(0) as LinearLayout
+            val ll2 = ll.getChildAt(2) as LinearLayout
+            val ll3 = ll2.getChildAt(1) as LinearLayout
+            val autoComplete = ll3.getChildAt(0) as SearchAutoComplete
+            autoComplete.setHintTextColor(Color.WHITE)
+
+
+
 
             searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -295,7 +303,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 }
 

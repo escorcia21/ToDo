@@ -12,7 +12,6 @@ class SqLiteHelper(context: Context,name: String, factory: SQLiteDatabase.Cursor
 
     companion object {
         lateinit var instance: SqLiteHelper
-
     }
 
     init {
@@ -20,7 +19,7 @@ class SqLiteHelper(context: Context,name: String, factory: SQLiteDatabase.Cursor
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL("create table ToDo(id INTEGER primary key autoIncrement, title text, description text)")
+        db.execSQL("create table ToDo(id INTEGER primary key autoIncrement, title text, description text, date text)")
 
     }
 
@@ -34,6 +33,7 @@ class SqLiteHelper(context: Context,name: String, factory: SQLiteDatabase.Cursor
         val contentValues = ContentValues()
         contentValues.put("title", record.title)
         contentValues.put("description", record.description)
+        contentValues.put("date", record.date)
         val result = bdd.insert("ToDo",null,contentValues)
         bdd.close()
         return result
@@ -56,14 +56,16 @@ class SqLiteHelper(context: Context,name: String, factory: SQLiteDatabase.Cursor
         var id: Int
         var title:String
         var description: String
+        var fecha: String
 
         if(cursor.moveToFirst()){
             do {
                 id = cursor.getInt(cursor.getColumnIndex("id").toInt())
                 title = cursor.getString(cursor.getColumnIndex("title").toInt())
                 description = cursor.getString(cursor.getColumnIndex("description").toInt())
+                fecha = cursor.getString(cursor.getColumnIndex("date").toInt())
 
-                var rec = CardData(id,title,description)
+                var rec = CardData(id,title,description,fecha)
                 cardlist.add(rec)
             } while (cursor.moveToNext())
         }
@@ -86,7 +88,7 @@ class SqLiteHelper(context: Context,name: String, factory: SQLiteDatabase.Cursor
         contentValues.put("id",todo.id)
         contentValues.put("title",todo.title)
         contentValues.put("description",todo.description)
-
+        contentValues.put("date",todo.date)
         val status = bdd.update("ToDo",contentValues,"id=${todo.id}",null)
         bdd.close()
         return status
